@@ -24,10 +24,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/user/**").hasRole("USER")
+                .antMatchers("/admin").hasRole("ADMIN")
+                .antMatchers("/vip").hasRole("VIP")
                 .and()
                 .formLogin().loginPage("/login").defaultSuccessUrl("/user")
                 .and()
-                .logout().logoutUrl("/logout").logoutSuccessUrl("/login");
+                .logout().logoutUrl("/logout").logoutSuccessUrl("/login")
+                .and()
+                .httpBasic();
     }
 
     /**
@@ -38,7 +42,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     protected UserDetailsService userDetailsService() {
         User.UserBuilder users = User.withDefaultPasswordEncoder();
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(users.username("anoyi").password("anoyi").roles("USER").build());
+        manager.createUser(users.username("Jon").password("123456").roles("USER").build());
+        manager.createUser(users.username("Bob").password("123456").roles("USER", "VIP").build());
+        manager.createUser(users.username("admin").password("123456").roles("ADMIN").build());
         return manager;
     }
 
