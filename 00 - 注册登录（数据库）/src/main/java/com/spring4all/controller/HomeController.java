@@ -1,6 +1,6 @@
 package com.spring4all.controller;
 
-import com.spring4all.entity.UserDO;
+import com.spring4all.entity.User;
 import com.spring4all.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -29,9 +29,9 @@ public class HomeController {
     }
 
     @PostMapping("/register")
-    public String doRegister(UserDO userDO){
+    public String doRegister(User user){
         // 此处省略校验逻辑
-        userService.insert(userDO);
+        userService.insert(user);
         return "redirect:register?success";
     }
 

@@ -32,6 +32,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/user/**").hasAuthority("USER")
+                .antMatchers("/admin").hasAuthority("ADMIN")
+                .antMatchers("/vip").hasAuthority("VIP")
                 .and()
                 .formLogin().loginPage("/login").defaultSuccessUrl("/user")
                 .and()
@@ -47,8 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     }
 
     @Bean
-    public static PasswordEncoder passwordEncoder() {
+    public PasswordEncoder noOpPasswordEncoder(){
         return NoOpPasswordEncoder.getInstance();
     }
-
 }

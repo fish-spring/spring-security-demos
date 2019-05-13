@@ -4,10 +4,10 @@ import lombok.Data;
 
 import javax.persistence.*;
 
+@Data
 @Entity
 @Table(name = "user")
-@Data
-public class UserDO {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,8 +24,8 @@ public class UserDO {
     private String password;
 
     /**
-     * 昵称
+     * 用户的角色管理
+     *   通过空格分割
      */
-    private String nickname;
-
+    private String roles;
 }
