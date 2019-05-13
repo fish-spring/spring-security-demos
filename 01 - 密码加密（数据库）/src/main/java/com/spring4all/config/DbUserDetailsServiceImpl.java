@@ -13,12 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class DbUserDetailsService implements UserDetailsService {
+public class DbUserDetailsServiceImpl implements UserDetailsService {
 
     private final UserService userService;
-
     @Autowired
-    DbUserDetailsService(UserService userService){
+    DbUserDetailsServiceImpl(UserService userService){
         this.userService = userService;
     }
 

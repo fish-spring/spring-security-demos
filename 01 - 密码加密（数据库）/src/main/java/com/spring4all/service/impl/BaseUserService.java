@@ -26,6 +26,9 @@ public class BaseUserService implements UserService {
 
     private final static Map<String, PasswordEncoder> ENCODER_MAP = new HashMap<>();
 
+    /**
+     * 这种存储格式是固定的，不能修改，例如： {noop}ps123456
+     */
     private final static String PASSWORD_FORMAT = "{%s}%s";
 
     private final UserRepository userRepository;
@@ -59,6 +62,8 @@ public class BaseUserService implements UserService {
         String encoderType = ENCODER_TYPE.get(x);
         PasswordEncoder passwordEncoder = ENCODER_MAP.get(encoderType);
         userDO.setPassword(String.format(PASSWORD_FORMAT, encoderType, passwordEncoder.encode(userDO.getPassword())));
+        log.info(String.format("创建一个用户： %s", userDO.toString()));
+
         userRepository.save(userDO);
     }
 

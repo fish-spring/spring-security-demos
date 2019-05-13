@@ -1,22 +1,19 @@
 package com.spring4all.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
-    private DbUserDetailsService dbUserDetailsService;
+    private DbUserDetailsServiceImpl dbUserDetailsServiceImpl;
 
     @Autowired
-    public void setDbUserDetailsService(DbUserDetailsService dbUserDetailsService){
-        this.dbUserDetailsService = dbUserDetailsService;
+    public void setDbUserDetailsServiceImpl(DbUserDetailsServiceImpl dbUserDetailsServiceImpl){
+        this.dbUserDetailsServiceImpl = dbUserDetailsServiceImpl;
     }
 
     /**
@@ -31,9 +28,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
         http
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
-                .antMatchers("/user/**").hasAuthority("USER")
+                .antMatchers("/users/**").hasAuthority("USER")
                 .and()
-                .formLogin().loginPage("/login").defaultSuccessUrl("/user")
+                .formLogin().loginPage("/login").defaultSuccessUrl("/users")
                 .and()
                 .logout().logoutUrl("/logout").logoutSuccessUrl("/login");
     }
@@ -43,7 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
      */
     @Override
     protected void configure(AuthenticationManagerBuilder builder) throws Exception{
-        builder.userDetailsService(dbUserDetailsService);
+        builder.userDetailsService(dbUserDetailsServiceImpl);
     }
 
 }
