@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.spring4all.entity.User;
 import com.spring4all.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,9 +13,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,15 +31,16 @@ import java.util.List;
  *   然后它继承了AbstractAuthenticationProcessingFilter，会让它处理登录认证的问题
  */
 @Slf4j
-public class CustomFromLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class CustomTokenLoginFilter extends AbstractAuthenticationProcessingFilter {
     private UserRepository userRepository;
 
     /**
      *
      * @param defaultFilterProcessesUrl  只对匹配的路由做过滤处理
+     *                                    默认只接受post请求
      * @param userRepository  查询用户信息的接口
      */
-    CustomFromLoginFilter(String defaultFilterProcessesUrl, UserRepository userRepository) {
+    CustomTokenLoginFilter(String defaultFilterProcessesUrl, UserRepository userRepository) {
         super(new AntPathRequestMatcher(defaultFilterProcessesUrl, HttpMethod.POST.name()));
         this.userRepository = userRepository;
     }
@@ -49,13 +55,12 @@ public class CustomFromLoginFilter extends AbstractAuthenticationProcessingFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException{
         log.info("当前url是: " + httpServletRequest.getRequestURL());
-        String username = httpServletRequest.getParameter("username");
-        String password = httpServletRequest.getParameter("password");
-        log.info(String.format("用户尝试登录username: %s, password: %s", username, password));
 
-        log.info(JSONObject.toJSONString(userRepository));
+        String token = httpServletRequest.getHeader("Authorization").substring(7);
+        log.info(String.format("用户尝试登录token: %s", token));
 
-        User user = userRepository.findByUsernameAndPassword(username, password);
+        User user = userRepository.findByToken(token);
+
         if (user == null){
             log.warn("未查询到匹配用户用户");
 
@@ -64,9 +69,16 @@ public class CustomFromLoginFilter extends AbstractAuthenticationProcessingFilte
         }
         log.info("查询到用户：" + user.toString());
 
+        String[] authorities = user.getToken().split(" ");
         List<SimpleGrantedAuthority> simpleGrantedAuthorities = new ArrayList<>();
-        simpleGrantedAuthorities.add(new SimpleGrantedAuthority("USER"));
-        return new UsernamePasswordAuthenticationToken(username, password, simpleGrantedAuthorities);
+
+        for (String authority : authorities) {
+            simpleGrantedAuthorities.add(new SimpleGrantedAuthority(authority));
+        }
+
+        // 使用token认证的话，这里的返回值是什么呢？ 服了
+
+        return new UsernamePasswordAuthenticationToken(user.getUsername(), token, simpleGrantedAuthorities);
     }
 
 
