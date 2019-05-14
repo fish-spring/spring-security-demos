@@ -26,6 +26,7 @@ import java.util.List;
 
 /**
  * 自定义 JSON 登录
+ *   注意通过UML类图观察当前类的结构
  */
 @Slf4j
 public class CustomJSONLoginFilter extends AbstractAuthenticationProcessingFilter {
@@ -39,17 +40,23 @@ public class CustomJSONLoginFilter extends AbstractAuthenticationProcessingFilte
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException, ServletException {
+        // 从请求报文中拿到账号密码
         JSONObject requestBody = getRequestBody(httpServletRequest);
         String username = requestBody.getString("username");
         String password = requestBody.getString("password");
+        log.info(String.format("用户尝试使用username:%s, password:%s登录", username, password));
+
+        // 前往数据库验明登录信息
         validateUsernameAndPassword(username, password);
+        log.info("用户名和密码匹配，运行登录");
+
         List<SimpleGrantedAuthority> simpleGrantedAuthorities = new ArrayList<>();
         simpleGrantedAuthorities.add(new SimpleGrantedAuthority("USER"));
         return new UsernamePasswordAuthenticationToken(username, password, simpleGrantedAuthorities);
     }
 
     /**
-     * 获取请求体
+     * 将Http请求体解析成JSON格式
      */
     private JSONObject getRequestBody(HttpServletRequest request) throws AuthenticationException{
         try {

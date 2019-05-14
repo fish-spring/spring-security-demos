@@ -27,5 +27,5 @@ public class User {
      * 用户的角色管理
      *   通过空格分割
      */
-    private String roles;
+    private String authorities;
 }

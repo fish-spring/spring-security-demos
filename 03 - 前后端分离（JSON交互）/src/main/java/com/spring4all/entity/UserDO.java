@@ -23,9 +23,4 @@ public class UserDO {
      */
     private String password;
 
-    /**
-     * 昵称
-     */
-    private String nickname;
-
 }

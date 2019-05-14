@@ -35,9 +35,9 @@ public class DbUserDetailsService implements UserDetailsService {
 
         // 解析出用户的角色
         List<SimpleGrantedAuthority> simpleGrantedAuthorities = new ArrayList<>();
-        for (String role : user.getRoles().split(" ")){
-            log.info(role);
-            simpleGrantedAuthorities.add(new SimpleGrantedAuthority(role));
+        for (String authority : user.getAuthorities().split(" ")){
+            log.info(authority);
+            simpleGrantedAuthorities.add(new SimpleGrantedAuthority(authority));
         }
         log.info(simpleGrantedAuthorities.toString());
 
